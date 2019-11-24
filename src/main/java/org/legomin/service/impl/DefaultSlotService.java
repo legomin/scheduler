@@ -89,6 +89,16 @@ public class DefaultSlotService implements SlotService {
     return approveRejectInternal(date, tenant, flat, Slot.Status.REJECTED);
   }
 
+  private RequestResult validateParams(final Instant date, final Tenant tenant, final Flat flat) {
+    if (date == null || tenant == null || flat == null || flat.getCurrentTenant() == null) {
+      return RequestResult.of(RequestResult.Status.INVALID_REQUEST);
+    } else if (!dateValidator.test(date, flat.getCurrentTenant().getTimeZone())) {
+      return RequestResult.of(RequestResult.Status.INVALID_DATE);
+    } else {
+      return null;
+    }
+  }
+
   private RequestResult approveRejectInternal(final Instant date, final Tenant tenant, final Flat flat,
     final Slot.Status statusToSet) {
     final RequestResult validationResult = validateParams(date, tenant, flat);
@@ -101,7 +111,7 @@ public class DefaultSlotService implements SlotService {
       return RequestResult.of(RequestResult.Status.FORBIDDEN);
     }
 
-    final Long slotId = slotFactory.getSlotId(flat, date);
+    final Long slotId = slotFactory.getSlotId(date);
     final Slot currentSlot = slotRepository.getSlot(slotId);
     if (currentSlot != null && currentSlot.getStatus() == Slot.Status.RESERVED) {
       final Slot newSlot = slotFactory.getSlot(flat, date, statusToSet, currentSlot.getReservedBy());
@@ -109,16 +119,6 @@ public class DefaultSlotService implements SlotService {
       return RequestResult.of(RequestResult.Status.SUCCESS, newSlot);
     } else {
       return RequestResult.of(RequestResult.Status.FORBIDDEN);
-    }
-  }
-
-  private RequestResult validateParams(final Instant date, final Tenant tenant, final Flat flat) {
-    if (date == null || tenant == null || flat == null) {
-      return RequestResult.of(RequestResult.Status.INVALID_REQUEST);
-    } else if (!dateValidator.test(date, flat.getCurrentTenant().getTimeZone())) {
-      return RequestResult.of(RequestResult.Status.INVALID_DATE);
-    } else {
-      return null;
     }
   }
 

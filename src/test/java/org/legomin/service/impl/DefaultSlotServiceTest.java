@@ -108,7 +108,7 @@ public class DefaultSlotServiceTest {
     final Slot slot = new Slot(1L, flat, date, date, newTenant, Slot.Status.RESERVED);
     when(slotRepository.getSlot(anyLong())).thenReturn(slot);
     when(slotFactory.getSlot(any(), any(), any(), any())).thenReturn(slot);
-    when(slotFactory.getSlotId(any(), any())).thenReturn(1L);
+    when(slotFactory.getSlotId(any())).thenReturn(1L);
 
     final RequestResult result = slotService.approveSlot(date, currentTenant, flat);
     assertEquals(RequestResult.Status.SUCCESS, result.getStatus());
@@ -116,7 +116,7 @@ public class DefaultSlotServiceTest {
     assertEquals(slot, result.getReservation().get());
 
     verify(dateValidator).test(date, ZoneId.systemDefault());
-    verify(slotFactory).getSlotId(flat, date);
+    verify(slotFactory).getSlotId(date);
     verify(slotFactory).getSlot(flat, date, Slot.Status.APPROVED, newTenant);
     verify(slotRepository).getSlot(1L);
     verify(slotRepository).updateSlot(slot);
@@ -127,7 +127,7 @@ public class DefaultSlotServiceTest {
     final Slot slot = new Slot(1L, flat, date, date, newTenant, Slot.Status.RESERVED);
     when(slotRepository.getSlot(anyLong())).thenReturn(slot);
     when(slotFactory.getSlot(any(), any(), any(), any())).thenReturn(slot);
-    when(slotFactory.getSlotId(any(), any())).thenReturn(1L);
+    when(slotFactory.getSlotId(any())).thenReturn(1L);
 
     final RequestResult result = slotService.rejectSlot(date, currentTenant, flat);
     assertEquals(RequestResult.Status.SUCCESS, result.getStatus());
@@ -135,7 +135,7 @@ public class DefaultSlotServiceTest {
     assertEquals(slot, result.getReservation().get());
 
     verify(dateValidator).test(date, ZoneId.systemDefault());
-    verify(slotFactory).getSlotId(flat, date);
+    verify(slotFactory).getSlotId(date);
     verify(slotFactory).getSlot(flat, date, Slot.Status.REJECTED, newTenant);
     verify(slotRepository).getSlot(1L);
     verify(slotRepository).updateSlot(slot);

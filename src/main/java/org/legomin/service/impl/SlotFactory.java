@@ -14,6 +14,6 @@ public interface SlotFactory {
 
   Slot getSlot(Flat flat, Instant date, Slot.Status status, Tenant reservedBy);
 
-  Long getSlotId(Flat flat, Instant date);
+  Long getSlotId(Instant date);
 
 }

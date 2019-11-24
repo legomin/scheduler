@@ -3,6 +3,7 @@ package org.legomin.application.vertx;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -32,11 +33,14 @@ import org.legomin.service.RequestResult;
 import org.legomin.service.impl.SimpleSlotFactory;
 import org.legomin.service.impl.DefaultSlotService;
 import org.legomin.service.impl.SlotFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Wow-wow, it's vertex!!
  */
 public class Application extends AbstractVerticle {
+  private static final Logger log = LoggerFactory.getLogger(Application.class);
 
   private static final Function<Slot, JsonObject> SLOT_TO_JSON_CONVERTER = slot -> new JsonObject()
     .put("Start date", slot.getStartDate())
@@ -78,9 +82,9 @@ public class Application extends AbstractVerticle {
 
     vertx.createHttpServer().requestHandler(router).listen(8080, ar -> {
       if (ar.succeeded()) {
-        System.out.println("Started in " + (System.currentTimeMillis()) + "ms");
+        log.debug("Started in {} ms", System.currentTimeMillis());
       } else {
-        ar.cause().printStackTrace();
+        log.error("Failed to start app", ar);
       }
     });
   }
@@ -103,15 +107,10 @@ public class Application extends AbstractVerticle {
       respond(result.getHttpCode(), routingContext.response());
 
       if (RequestResult.Status.SUCCESS == result.getStatus()) {
-        final Optional<Slot> reservation = result.getReservation();
-        if (reservation.isPresent()) {
-          notificationManager.notify(result.getReservation().get());
-        } else {
-          //TODO log error
-        }
-
+        notificationManager.notify(result.getReservation().get());
       }
-    } catch (NullPointerException | ClassCastException | DateTimeParseException e) {
+    } catch (NullPointerException | ClassCastException | DateTimeParseException | NoSuchElementException e) {
+      log.error("failed to handle action, cause ", e);
       respond(400, routingContext.response());
     }
   }

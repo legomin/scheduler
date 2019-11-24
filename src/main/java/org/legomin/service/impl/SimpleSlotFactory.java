@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 import org.legomin.domain.Flat;
 import org.legomin.domain.Slot;
@@ -17,18 +18,20 @@ public class SimpleSlotFactory implements SlotFactory {
 
   @Override
   public Slot getSlot(final Flat flat, final Instant date, final Slot.Status status, final Tenant reservedBy) {
-    final Long id = getSlotId(flat, date);
+    final ZoneId zoneId = ZoneId.systemDefault();
+    final Long id = getSlotId(date);
     final Instant startDate = Instant.ofEpochMilli(id);
-    final LocalDateTime slotStartDate = LocalDateTime.ofInstant(startDate, ZoneId.systemDefault());
+    final LocalDateTime slotStartDate = LocalDateTime.ofInstant(startDate, zoneId);
 
-    final Instant endDate = slotStartDate.plusSeconds(19 * 60 + 59).atZone(ZoneId.systemDefault()).toInstant();
+    final Instant endDate = slotStartDate.plusSeconds(19 * 60 + 59).atZone(zoneId).toInstant();
 
     return new Slot(id, flat, startDate, endDate, reservedBy, status);
   }
 
   @Override
-  public Long getSlotId(Flat flat, Instant date) {
-    final LocalDateTime localDate = LocalDateTime.ofInstant(date, ZoneId.systemDefault());
+  public Long getSlotId(final Instant date) {
+    final ZoneId zoneId = ZoneId.systemDefault();
+    final LocalDateTime localDate = LocalDateTime.ofInstant(date, zoneId);
     final int minutes = localDate.getMinute();
     final LocalDateTime slotStartDate;
     if (minutes >= 40) {
@@ -39,8 +42,6 @@ public class SimpleSlotFactory implements SlotFactory {
       slotStartDate = LocalDateTime.of(localDate.toLocalDate(), LocalTime.of(localDate.getHour(), 0, 0));
     }
 
-    final Instant startDate =  slotStartDate.atZone(ZoneId.systemDefault()).toInstant();
-
-    return startDate.toEpochMilli();
+    return slotStartDate.atZone(zoneId).toInstant().toEpochMilli();
   }
 }
