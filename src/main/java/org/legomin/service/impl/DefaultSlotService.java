@@ -15,6 +15,9 @@ import org.legomin.repository.SlotRepository;
 import org.legomin.service.RequestResult;
 import org.legomin.service.SlotService;
 
+/**
+ * Main business logic implementation
+ */
 public class DefaultSlotService implements SlotService {
   private final SlotRepository slotRepository;
   private final BiPredicate<Instant, ZoneId> dateValidator;
@@ -27,8 +30,8 @@ public class DefaultSlotService implements SlotService {
   }
 
   @Override
-  public Collection<Slot> getSlots() {
-    return slotRepository.getSlots();
+  public Collection<Slot> getSlots(final Flat flat, final Instant startDate, final Instant finishDate) {
+    return slotRepository.getSlots(flat, startDate, finishDate);
   }
 
   @Override
@@ -48,7 +51,7 @@ public class DefaultSlotService implements SlotService {
       return RequestResult.of(RequestResult.Status.INVALID_DATE);
     }
 
-    final Slot newSlot = slotFactory.getSlot(date, Slot.Status.RESERVED, tenant);
+    final Slot newSlot = slotFactory.getSlot(flat, date, Slot.Status.RESERVED, tenant);
     final Slot currentSlot = slotRepository.getSlot(newSlot.getId());
     if (currentSlot == null || currentSlot.getStatus() == Slot.Status.FREE) {
       slotRepository.updateSlot(newSlot);
@@ -65,7 +68,7 @@ public class DefaultSlotService implements SlotService {
       return validationResult;
     }
 
-    final Slot newSlot = slotFactory.getSlot(date, Slot.Status.FREE, null);
+    final Slot newSlot = slotFactory.getSlot(flat, date, Slot.Status.FREE, null);
     final Slot currentSlot = slotRepository.getSlot(newSlot.getId());
     if (currentSlot != null && currentSlot.getStatus() == Slot.Status.RESERVED &&
       tenant.equals(currentSlot.getReservedBy())) {
@@ -98,7 +101,7 @@ public class DefaultSlotService implements SlotService {
       return RequestResult.of(RequestResult.Status.FORBIDDEN);
     }
 
-    final Slot newSlot = slotFactory.getSlot(date, statusToSet, currentTenant);
+    final Slot newSlot = slotFactory.getSlot(flat, date, statusToSet, currentTenant);
     final Slot currentSlot = slotRepository.getSlot(newSlot.getId());
     if (currentSlot != null && currentSlot.getStatus() == Slot.Status.RESERVED) {
       slotRepository.updateSlot(newSlot);

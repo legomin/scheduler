@@ -4,6 +4,14 @@ import java.util.Optional;
 
 import org.legomin.domain.Slot;
 
+/**
+ * Class represents Responses from service
+ *
+ * If response is succeed then additionally to code holds changed scheduler entity,
+ * otherwise error code only
+ *
+ * codes contain their http representations for convenience
+ */
 public class RequestResult {
 
   public static enum Status {

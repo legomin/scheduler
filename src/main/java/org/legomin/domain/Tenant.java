@@ -4,6 +4,9 @@ import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Tenants representation class
+ */
 public class Tenant {
   private final Long id;
 

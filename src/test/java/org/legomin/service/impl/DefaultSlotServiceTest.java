@@ -1,5 +1,6 @@
 package org.legomin.service.impl;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -15,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.legomin.domain.Flat;
 import org.legomin.domain.Slot;
 import org.legomin.repository.SlotRepository;
 import org.legomin.service.SlotService;
@@ -46,12 +48,13 @@ public class DefaultSlotServiceTest {
 
   @Test
   public void getSlots() {
-    List<Slot> slots = new ArrayList<>();
-    slots.add(new Slot(1, null, null, null, Slot.Status.FREE));
-    when(slotRepository.getSlots()).thenReturn(slots);
-    Assert.assertEquals("Unexpected slots collection", slots, slotService.getSlots());
+    final Flat flat = new Flat(1, null);
+    final List<Slot> slots = new ArrayList<>();
+    slots.add(new Slot(1L, flat, Instant.now(), Instant.now(), null, Slot.Status.FREE));
+    when(slotRepository.getSlots(any(Flat.class), any(Instant.class), any(Instant.class))).thenReturn(slots);
+    Assert.assertEquals("Unexpected slots collection", slots, slotService.getSlots(flat, null, null));
 
-    verify(slotRepository).getSlots();
+    verify(slotRepository).getSlots(flat, null, null);
   }
 
   @Test

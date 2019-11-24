@@ -4,6 +4,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.time.Instant;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +28,12 @@ public class DefaultNotificationManagerTest {
   private NotificationManager notificationManager;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     notificationManager = new DefaultNotificationManager(tenantNotifier);
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     verifyNoMoreInteractions(tenantNotifier);
   }
 
@@ -40,9 +42,9 @@ public class DefaultNotificationManagerTest {
     final Tenant currentTenant = new Tenant(0L, null);
     final Tenant reservedBy = new Tenant(1L, null);
     final Flat flat = new Flat(1, currentTenant);
-    final Slot slot = new Slot(1, null, null, reservedBy, Slot.Status.RESERVED);
+    final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), reservedBy, Slot.Status.RESERVED);
 
-    notificationManager.notify(flat, slot);
+    notificationManager.notify(slot);
     verify(tenantNotifier).notify(eq(currentTenant), Matchers.contains("reseved"));
   }
 
@@ -50,9 +52,9 @@ public class DefaultNotificationManagerTest {
   public void testCancelled() {
     final Tenant currentTenant = new Tenant(0L, null);
     final Flat flat = new Flat(1, currentTenant);
-    final Slot slot = new Slot(1, null, null, null, Slot.Status.FREE);
+    final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), null, Slot.Status.FREE);
 
-    notificationManager.notify(flat, slot);
+    notificationManager.notify(slot);
     verify(tenantNotifier).notify(eq(currentTenant), Matchers.contains("cancelled"));
   }
 
@@ -61,9 +63,9 @@ public class DefaultNotificationManagerTest {
     final Tenant currentTenant = new Tenant(0L, null);
     final Tenant reservedBy = new Tenant(1L, null);
     final Flat flat = new Flat(1, currentTenant);
-    final Slot slot = new Slot(1, null, null, reservedBy, Slot.Status.APPROVED);
+    final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), reservedBy, Slot.Status.APPROVED);
 
-    notificationManager.notify(flat, slot);
+    notificationManager.notify(slot);
     verify(tenantNotifier).notify(eq(reservedBy), Matchers.contains("approved"));
   }
 
@@ -72,18 +74,17 @@ public class DefaultNotificationManagerTest {
     final Tenant currentTenant = new Tenant(0L, null);
     final Tenant reservedBy = new Tenant(1L, null);
     final Flat flat = new Flat(1, currentTenant);
-    final Slot slot = new Slot(1, null, null, reservedBy, Slot.Status.REJECTED);
+    final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), reservedBy, Slot.Status.REJECTED);
 
-    notificationManager.notify(flat, slot);
+    notificationManager.notify(slot);
     verify(tenantNotifier).notify(eq(reservedBy), Matchers.contains("rejected"));
   }
 
   @Test
   public void testWrongInput() {
-    final Tenant reservedBy = new Tenant(1L, null);
-    final Slot slot = new Slot(1, null, null, reservedBy, Slot.Status.REJECTED);
+    final Slot slot = new Slot(1L, new Flat(1L, null), Instant.now(), Instant.now(), null, Slot.Status.REJECTED);
 
-    notificationManager.notify(null, slot);
+    notificationManager.notify(slot);
   }
 
   //TODO add all wrong usecases

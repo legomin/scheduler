@@ -17,12 +17,13 @@ public class DefaultNotificationManager implements NotificationManager {
   }
 
   @Override
-  public void notify(final Flat flat, final Slot slot) {
+  public void notify(final Slot slot) {
 
-    if (slot == null || flat == null) {
+    if (slot == null) {
       //TODO log error
       return;
     }
+    final Flat flat = slot.getFlat();
     final Slot.Status status = slot.getStatus();
     final Tenant currentTenant = flat.getCurrentTenant();
 

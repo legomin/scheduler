@@ -33,6 +33,9 @@ import org.legomin.service.impl.SimpleSlotFactory;
 import org.legomin.service.impl.DefaultSlotService;
 import org.legomin.service.impl.SlotFactory;
 
+/**
+ * Wow-wow, it's vertex!!
+ */
 public class Application extends AbstractVerticle {
 
   private static final Function<Slot, JsonObject> SLOT_TO_JSON_CONVERTER = slot -> new JsonObject()
@@ -84,7 +87,7 @@ public class Application extends AbstractVerticle {
 
   private void handleGetSlots(final RoutingContext routingContext) {
     final JsonArray arr = new JsonArray();
-    defaultSlotService.getSlots()
+    defaultSlotService.getSlots(mockFlat, null, null)
       .forEach(slot -> arr.add(SLOT_TO_JSON_CONVERTER.apply(slot)));
     routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());
   }
@@ -102,7 +105,7 @@ public class Application extends AbstractVerticle {
       if (RequestResult.Status.SUCCESS == result.getStatus()) {
         final Optional<Slot> reservation = result.getReservation();
         if (reservation.isPresent()) {
-          notificationManager.notify(mockFlat, result.getReservation().get());
+          notificationManager.notify(result.getReservation().get());
         } else {
           //TODO log error
         }

@@ -7,6 +7,12 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.function.BiPredicate;
 
+/**
+ * Simple date validating
+ *
+ * 1. if it belongs to [10-00; 20-00] interval
+ * 2. if it is at next week
+ */
 public class SimpleDateValidator implements BiPredicate<Instant, ZoneId> {
 
   @Override
