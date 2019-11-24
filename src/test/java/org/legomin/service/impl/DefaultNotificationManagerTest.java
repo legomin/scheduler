@@ -41,7 +41,7 @@ public class DefaultNotificationManagerTest {
   public void testReserved() {
     final Tenant currentTenant = new Tenant(0L, null);
     final Tenant reservedBy = new Tenant(1L, null);
-    final Flat flat = new Flat(1, currentTenant);
+    final Flat flat = new Flat(1L, currentTenant);
     final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), reservedBy, Slot.Status.RESERVED);
 
     notificationManager.notify(slot);
@@ -51,7 +51,7 @@ public class DefaultNotificationManagerTest {
   @Test
   public void testCancelled() {
     final Tenant currentTenant = new Tenant(0L, null);
-    final Flat flat = new Flat(1, currentTenant);
+    final Flat flat = new Flat(1L, currentTenant);
     final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), null, Slot.Status.FREE);
 
     notificationManager.notify(slot);
@@ -62,7 +62,7 @@ public class DefaultNotificationManagerTest {
   public void testApproved() {
     final Tenant currentTenant = new Tenant(0L, null);
     final Tenant reservedBy = new Tenant(1L, null);
-    final Flat flat = new Flat(1, currentTenant);
+    final Flat flat = new Flat(1L, currentTenant);
     final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), reservedBy, Slot.Status.APPROVED);
 
     notificationManager.notify(slot);
@@ -73,7 +73,7 @@ public class DefaultNotificationManagerTest {
   public void testRejected() {
     final Tenant currentTenant = new Tenant(0L, null);
     final Tenant reservedBy = new Tenant(1L, null);
-    final Flat flat = new Flat(1, currentTenant);
+    final Flat flat = new Flat(1L, currentTenant);
     final Slot slot = new Slot(1L, flat, Instant.now(), Instant.now(), reservedBy, Slot.Status.REJECTED);
 
     notificationManager.notify(slot);

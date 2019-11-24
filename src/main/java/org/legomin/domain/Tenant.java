@@ -1,5 +1,7 @@
 package org.legomin.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,7 +15,7 @@ public class Tenant {
   private final transient ZoneId timeZone;
 
   public Tenant(Long id, ZoneId timeZone) {
-    this.id = id;
+    this.id = requireNonNull(id);
     this.timeZone = Optional.ofNullable(timeZone).orElse(ZoneId.systemDefault());
   }
 

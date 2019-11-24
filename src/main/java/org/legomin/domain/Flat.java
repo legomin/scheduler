@@ -1,5 +1,7 @@
 package org.legomin.domain;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Objects;
 
 /**
@@ -8,15 +10,15 @@ import java.util.Objects;
  * In current implementation is need only to distinguish current tenant from others
  */
 public class Flat {
-  private final long id;
+  private final Long id;
   private final Tenant currentTenant;
 
-  public Flat(long id, Tenant currentTenant) {
-    this.id = id;
+  public Flat(Long id, Tenant currentTenant) {
+    this.id = requireNonNull(id);
     this.currentTenant = currentTenant;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
