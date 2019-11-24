@@ -17,7 +17,17 @@ public class SimpleSlotFactory implements SlotFactory {
 
   @Override
   public Slot getSlot(final Flat flat, final Instant date, final Slot.Status status, final Tenant reservedBy) {
+    final Long id = getSlotId(flat, date);
+    final Instant startDate = Instant.ofEpochMilli(id);
+    final LocalDateTime slotStartDate = LocalDateTime.ofInstant(startDate, ZoneId.systemDefault());
 
+    final Instant endDate = slotStartDate.plusSeconds(19 * 60 + 59).atZone(ZoneId.systemDefault()).toInstant();
+
+    return new Slot(id, flat, startDate, endDate, reservedBy, status);
+  }
+
+  @Override
+  public Long getSlotId(Flat flat, Instant date) {
     final LocalDateTime localDate = LocalDateTime.ofInstant(date, ZoneId.systemDefault());
     final int minutes = localDate.getMinute();
     final LocalDateTime slotStartDate;
@@ -30,9 +40,7 @@ public class SimpleSlotFactory implements SlotFactory {
     }
 
     final Instant startDate =  slotStartDate.atZone(ZoneId.systemDefault()).toInstant();
-    final long id = startDate.toEpochMilli();
-    final Instant endDate = slotStartDate.plusSeconds(19 * 60 + 59).atZone(ZoneId.systemDefault()).toInstant();
 
-    return new Slot(id, flat, startDate, endDate, reservedBy, status);
+    return startDate.toEpochMilli();
   }
 }

@@ -101,9 +101,10 @@ public class DefaultSlotService implements SlotService {
       return RequestResult.of(RequestResult.Status.FORBIDDEN);
     }
 
-    final Slot newSlot = slotFactory.getSlot(flat, date, statusToSet, currentTenant);
-    final Slot currentSlot = slotRepository.getSlot(newSlot.getId());
+    final Long slotId = slotFactory.getSlotId(flat, date);
+    final Slot currentSlot = slotRepository.getSlot(slotId);
     if (currentSlot != null && currentSlot.getStatus() == Slot.Status.RESERVED) {
+      final Slot newSlot = slotFactory.getSlot(flat, date, statusToSet, currentSlot.getReservedBy());
       slotRepository.updateSlot(newSlot);
       return RequestResult.of(RequestResult.Status.SUCCESS, newSlot);
     } else {
